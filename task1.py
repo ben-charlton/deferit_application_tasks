@@ -7,3 +7,5 @@ print (aftStockInfo)
 aftWeeklyReturns = aftStockInfo['Adj Close'].resample('M', on='date').ffill().pct_change()
 
 print("weekly price = " + aftWeeklyReturns)
+
+# check gitlog
