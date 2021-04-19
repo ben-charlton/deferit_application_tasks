@@ -14,6 +14,7 @@ class Email:
             from_email='from_email@example.com',
             to_emails=address_to,
             content = Content("text/plain", message)
+        )
 
         # if there is an attachment, add it to the email
         if file_path != None:
@@ -30,8 +31,12 @@ class Email:
         
         try: 
             sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-            response = sg.send(msg)
-            print(response.status_code, response.body, response.headers)
+            # Get a JSON-ready representation of the Mail object
+            mail_json = mail.get()
+            # Send an HTTP POST request to /mail/send
+            response = sg.client.mail.send.post(request_body=mail_json)
+            print(response.status_code)
+            print(response.headers)
         except Exception as e:
             print(e.message)
 
