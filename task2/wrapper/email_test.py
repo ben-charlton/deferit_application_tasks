@@ -5,43 +5,51 @@ from sendgrid.helpers.mail import (Mail, Email, To, Content, Attachment, FileCon
 import base64
 
 class Email:
-    def __init__(self, from_email):
-        self.from_email = from_email
+    # instantiation of an email object takes in the email address you wish to send emails from
+    # and an api key that is attached to the verified email address 
+    def __init__(self, fromEmail, apiKey):
+        self.fromEmail = fromEmail
+        self.apiKey = apiKey
 
-    def send(self, address_to, subject, message, file_path=None):
-             # build the email to send
-        msg = self.buildMessage(address_to, subject, message)
-        if file_path != None:
-            msg.attachment = self.addAttachment(msg, file_path)
+    def send(self, addressTo, subject, message, filePath=None):
+        # first build the message and add the attachment if one is given
+        # then we use the sendgrid api to send the required email
+        # and grab any error messages if they occur
+        msg = self._buildMessage(addressTo, subject, message)
+        if filePath != None:
+            msg.attachment = self._addAttachment(msg, filePath)
         try: 
-            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            sg = SendGridAPIClient(self.apiKey)
             response = sg.send(msg)
             print(response.status_code)
             print(response.headers)
         except Exception as e:
             print(e)
 
-    def buildMessage(self, address_to, subject, message):
+    # the buildMessage function builds the initial Mail object that is sent
+    # and attachments are added on later
+    def _buildMessage(self, addressTo, subject, message):
         msg = Mail(
-            from_email=self.from_email,
-            to_emails=address_to,
+            from_email=self.fromEmail,
+            to_emails=addressTo,
             subject=subject,
             html_content=Content("text/plain", message)
         )
         return msg
 
-    def addAttachment(self, email, file_path):
+    # the addAttachment function takes in a Mail object
+    # and adds an attachment to it under the specified file path
+    def _addAttachment(self, email, file_path):
         with open(file_path, 'rb') as f:
             data = f.read()
             f.close()
         encoded_file = base64.b64encode(data).decode()
         attachedFile = Attachment(
             FileContent(encoded_file),
-            FileName(file_path),
+            FileName(os.path.basename(file_path)),
         )
         return attachedFile
+    
 
-# test
-test = Email(from_email='ben.charlton@hotmail.com.au')
-test.send('bbcharltonn@gmail.com', "testing mail w attachment", "testing mail", '../../task1/MAVG.png')
+
 
