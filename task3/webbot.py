@@ -4,10 +4,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
-# initiate the browser
+# initiate the browser using selenium
 browser  = webdriver.Chrome(ChromeDriverManager().install())
 
-# open the Website
+# open the given website 
 browser.get('https://addressify.com.au/')
 
 # grab serachbar from the html element and enter martin place adress 
