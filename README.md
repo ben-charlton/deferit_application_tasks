@@ -1,2 +1,2 @@
 # deferit_application_tasks
-internship application tasks written in python
+application tasks written in python
